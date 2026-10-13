@@ -1,0 +1,20 @@
+{
+  "name": "念之路 · 心性修行",
+  "short_name": "念之路",
+  "start_url": "./nenpath.html",
+  "display": "standalone",
+  "background_color": "#0F1512",
+  "theme_color": "#0F1512",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

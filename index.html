@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>心性修行 · 念之路</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="念之路">
+<meta name="theme-color" content="#0F1512">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --bg:#0F1512; --bg2:#141C17; --card:#182119; --fg:#EFEFE8; --dim:#8FA096; --line:rgba(239,239,232,.13);
+  --n:#7FC8A9; --gold:#D9B44A; --red:#E85D75; --blue:#6FA8DC; --orange:#E8A04C; --purple:#B08DC9;
+  --sans:"Helvetica Neue","Avenir Next","PingFang SC","Microsoft YaHei",sans-serif;
+  --disp:"Arial Black","Helvetica Neue","PingFang SC",sans-serif;
+  --mono:ui-monospace,"Courier New",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:linear-gradient(176deg,var(--bg) 0%,var(--bg2) 100%);color:var(--fg);font-family:var(--sans);max-width:640px;margin:0 auto;padding:0 18px 110px;-webkit-font-smoothing:antialiased}
+header{padding:50px 2px 6px}
+.kick{font-family:var(--mono);font-size:10px;letter-spacing:.32em;color:var(--dim)}
+.hero .big{font-family:var(--disp);font-size:clamp(40px,13.5vw,72px);line-height:1.02;margin-top:12px}
+.hero .big span{color:var(--n)}
+.hero .sub{margin-top:14px;font-size:12.5px;color:var(--dim);letter-spacing:.14em;line-height:2}
+.rule{height:3px;background:var(--n);margin-top:22px}
+/* 每日心法 */
+.daily{margin-top:20px;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:16px 18px}
+.daily .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.28em;color:var(--n)}
+.daily .q{font-family:"Georgia","Songti SC",serif;font-size:16px;line-height:1.85;margin-top:9px}
+.daily .w{font-size:10px;color:var(--dim);margin-top:7px;letter-spacing:.1em}
+/* 统计 */
+.stats{display:flex;margin-top:20px;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden}
+.stat{flex:1;padding:14px 4px;text-align:center;border-right:1px solid var(--line)}
+.stat:last-child{border-right:none}
+.stat b{font-family:var(--disp);font-size:21px}
+.stat b i{font-style:normal;color:var(--n)}
+.stat small{display:block;font-size:9px;color:var(--dim);letter-spacing:.2em;margin-top:4px}
+/* 时间线 */
+.tl{margin-top:26px;position:relative;padding-left:26px}
+.tl::before{content:"";position:absolute;left:8px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.stage{position:relative;margin-bottom:18px}
+.stage::before{content:"";position:absolute;left:-25px;top:20px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:2px solid var(--dim);z-index:1}
+.stage.open::before,.stage.done::before{border-color:var(--n)}
+.stage.done::before{background:var(--n);box-shadow:0 0 10px rgba(127,200,169,.5)}
+.sc{border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden}
+.stage.locked .sc{opacity:.45}
+.sc-h{padding:15px 16px;cursor:pointer;display:flex;align-items:center;gap:12px}
+.sc-h .cn{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--dim)}
+.sc-h .t{font-family:var(--disp);font-size:16.5px;flex:1;line-height:1.35}
+.stage.done .sc-h .t{color:var(--n)}
+.sc-h .st{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--dim);flex:none}
+.stage.done .sc-h .st{color:var(--gold)}
+.stage.open .sc-h .st{color:var(--n)}
+.sc-h .arr{font-size:11px;color:var(--dim);transition:transform .3s}
+.stage.expand .sc-h .arr{transform:rotate(90deg)}
+.sc-b{display:none;border-top:1px solid var(--line);padding:14px 16px 16px}
+.stage.expand .sc-b{display:block}
+.sc-desc{font-size:12.5px;color:var(--dim);line-height:1.95;margin-bottom:12px}
+.task{display:flex;align-items:flex-start;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;cursor:pointer;background:rgba(255,255,255,.02)}
+.task .box{width:22px;height:22px;border:1.5px solid var(--dim);border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;transition:all .25s;margin-top:2px}
+.task.hit .box{background:var(--n);border-color:var(--n);color:#0F1512}
+.task .tx{flex:1;min-width:0}
+.task .tt{font-size:13px;font-weight:700;line-height:1.5}
+.task.hit .tt{color:var(--n)}
+.task .td{font-size:10.5px;color:var(--dim);margin-top:4px;line-height:1.8}
+.essay{margin-top:10px}
+.essay textarea{width:100%;min-height:76px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:11px;color:var(--fg);font-family:var(--sans);font-size:13px;line-height:1.9;padding:12px 14px;resize:vertical;outline:none}
+.essay textarea:focus{border-color:var(--n)}
+.essay .hint{font-size:9.5px;color:var(--dim);margin-top:6px;letter-spacing:.06em}
+.done-note{font-family:var(--mono);font-size:9.5px;color:var(--gold);letter-spacing:.16em;margin-top:10px;display:none}
+.stage.done .done-note{display:block}
+/* 认定书 */
+.badge{position:fixed;inset:0;z-index:950;background:rgba(5,10,8,.82);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s;padding:24px}
+.badge.show{opacity:1;pointer-events:auto}
+.cert{background:linear-gradient(160deg,#1B2620,#121A15);border:2px solid var(--gold);border-radius:16px;max-width:340px;width:100%;padding:34px 26px;text-align:center;box-shadow:0 0 80px rgba(217,180,74,.18);position:relative}
+.cert::before{content:"";position:absolute;inset:7px;border:1px solid rgba(217,180,74,.35);border-radius:11px;pointer-events:none}
+.cert .k{font-family:var(--mono);font-size:9px;letter-spacing:.34em;color:var(--gold)}
+.cert .big{font-family:var(--disp);font-size:26px;margin:15px 0 8px;line-height:1.3}
+.cert .hexa{font-size:11px;color:var(--dim);line-height:1.9;margin:10px 0}
+.cert .hexa b{color:var(--gold)}
+.cert p{font-size:12px;color:var(--dim);line-height:1.95}
+.cert .ok{display:inline-block;margin-top:16px;padding:10px 30px;border:1px solid var(--gold);border-radius:99px;font-size:12px;letter-spacing:.2em;color:var(--gold);cursor:pointer}
+footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);font-family:var(--mono);font-size:9.5px;color:var(--dim);line-height:2.1;letter-spacing:.08em}
+.cfp{position:fixed;width:7px;height:7px;border-radius:50%;z-index:960;pointer-events:none}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--n);color:#0F1512;font-size:12px;font-weight:800;letter-spacing:.1em;padding:10px 20px;border-radius:99px;z-index:970;opacity:0;transition:opacity .3s;pointer-events:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="kick">HUNTER × HUNTER · TRAINING ARC</div>
+  <div class="hero">
+    <div class="big">念之<span>路</span></div>
+    <div class="sub">全职猎人式心性成长线 · 七章试炼<br>不是变强的教程，是不放弃的练习</div>
+  </div>
+  <div class="rule"></div>
+</header>
+<div class="daily">
+  <div class="k">/// TODAY · 今日心法</div>
+  <div class="q" id="dailyQ"></div>
+  <div class="w" id="dailyW"></div>
+</div>
+<div class="stats">
+  <div class="stat"><b id="stT">0<i>/</i>15</b><small>试炼通过</small></div>
+  <div class="stat"><b id="stC">0<i>/</i>7</b><small>章节制霸</small></div>
+  <div class="stat"><b id="stD">0<small>D</small></b><small>修行天数</small></div>
+</div>
+<div class="tl" id="tl"></div>
+<footer>/// 心性练习为自我成长工具，非医疗建议——长期情绪低落请寻求专业帮助<br>/// 进度保存在本机 · 猎人执照正在生成中…</footer>
+<div class="badge" id="badge">
+  <div class="cert">
+    <div class="k">HUNTER ASSOCIATION</div>
+    <div class="big">念能力者<br>心性认定书</div>
+    <div class="hexa">经由七章试炼与 <b id="cDays">0</b> 天修行<br>认定你已掌握念之基础：<br><b>纏 · 絕 · 練 · 發</b></div>
+    <p>猎人协会 心性审查科<br>授予「可以独当一面的新人」称号<br>此后路长，愿你不失其心</p>
+    <div class="ok" onclick="document.getElementById('badge').classList.remove('show')">收下认定</div>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+const QUOTES = [
+ {q:"「害怕的话，变强就好了。」",w:"心法 · 恐惧不是停止的理由"},
+ {q:"「想要见识一下，真正的强大。」",w:"心法 · 保持对世界的好奇"},
+ {q:"「基础，才是最深的奥义。」",w:"心法 · 重复平凡的事"},
+ {q:"「感谢给予。」",w:"心法 · 一切都是练习的素材"},
+ {q:"「青涩的果实，就让它慢慢成熟。」",w:"心法 · 允许自己还没准备好"},
+ {q:"「愤怒要指向该指向的地方。」",w:"心法 · 情绪需要出口而非爆发"},
+ {q:"「行动本身，就是意义。」",w:"心法 · 不必等到万全才开始"},
+ {q:"「把对手，变成老师。」",w:"心法 · 讨厌的人身上也有课"},
+ {q:"「强大不是不害怕，是害怕仍然向前。」",w:"心法 · 勇气的定义"},
+ {q:"「路很长，愿你不失其心。」",w:"心法 · 慢慢来，比较快"}
+];
+const STAGES = [
+ {id:"s0", cn:"CHAPTER 0", t:"起航 · 动机", arc:"小杰离开鲸鱼岛", desc:"一切修行从「为什么」开始。想清楚你要什么，路才有方向。",
+  tasks:[
+   {id:"t01", tt:"写下你的动机", td:"输入框里写：我为什么要练心性？（至少 10 个字，写给未来的自己）"},
+   {id:"t02", tt:"立下第一个承诺", td:"今天只答应自己一件小事，并做到它。"}],
+  essay:{key:"e0", ph:"我为什么要练心性……", min:10}},
+ {id:"s1", cn:"CHAPTER 1", t:"猎人考试 · 忍耐", arc:"西索的考验", desc:"考试淘汰的从来不是不够强的人，是撑不住的人。这一章练「等得住」。",
+  tasks:[
+   {id:"t11", tt:"忍耐练习 · 90 分钟", td:"挑一件你平时忍不住做的事（刷手机/零食/吐槽），忍住 90 分钟。"},
+   {id:"t12", tt:"被否定之后继续", td:"做一件你一直在拖延的事——做完再回来勾。"},
+   {id:"t13", tt:"观察而不评判", td:"今天遇到不顺时，先在心里数 10 下再回应。"}]},
+ {id:"s2", cn:"CHAPTER 2", t:"天空竞技场 · 基本功", arc:"胜负从基础开始", desc:"天才的秘诀是基本功。这一章练「日日不断」。",
+  tasks:[
+   {id:"t21", tt:"90 秒呼吸", td:"闭眼呼吸 90 秒：吸 4 帧稳 4 帧呼 6 帧，走神了就拉回来。"},
+   {id:"t22", tt:"三个日常微任务", td:"今天完成三件「很小但一直没做」的事（叠被子/回消息/喝水）。"},
+   {id:"t23", tt:"睡前的复盘", td:"睡前想一件今天做得好的事、一件明天可以更好的事。"}]},
+ {id:"s3", cn:"CHAPTER 3", t:"念能力觉醒 · 四大行", arc:"纏 · 絕 · 練 · 發", desc:"守住、隐藏、点燃、创造。四大行各取一件，练一日。",
+  tasks:[
+   {id:"t31", tt:"纏 · 守住底线", td:"今天守住一条对自己的承诺（不熬夜/不乱花钱/不迟到）。"},
+   {id:"t32", tt:"絕 · 隐藏气息", td:"半天不带手机（或关闭所有社媒通知）。"},
+   {id:"t33", tt:"練 · 最难的事先做", td:"把今天最难的那件事排在第一个做。"},
+   {id:"t34", tt:"發 · 写下你的必杀技", td:"输入框：你身上独一无二的、可以练成绝技的东西是什么？", essay:{key:"e3", ph:"我的必杀技是……", min:6}}]},
+ {id:"s4", cn:"CHAPTER 4", t:"贪婪之岛 · 借力", arc:"比司吉的修行", desc:"对手是最好的老师。这一章练「转化」。",
+  tasks:[
+   {id:"t41", tt:"把对手变老师", td:"输入框：写下一个你讨厌/不服的人身上，值得你学的一点。", essay:{key:"e4", ph:"从 TA 身上我能学到……", min:8}},
+   {id:"t42", tt:"预测 · 石头剪刀布", td:"今天做一个决定前，先写下预判和理由，再行动，事后对答案。"},
+   {id:"t43", tt:"借力而行", td:"向一个人求助一件你本来想硬扛的事。"}]},
+ {id:"s5", cn:"CHAPTER 5", t:"蚂蚁篇 · 心之磨砺", arc:"黑暗中的光", desc:"最黑的一章，也是光最亮的一章。这一章练「直面」。",
+  tasks:[
+   {id:"t51", tt:"直面一件害怕的事", td:"做一件你一直在逃避的小事（一个电话/一次对话/一次开始）。"},
+   {id:"t52", tt:"跌倒宣言", td:"写下最近一次失败教会你的事（至少 8 个字）。", essay:{key:"e5", ph:"那次失败教会我……", min:8}},
+   {id:"t53", tt:"害怕仍然向前", td:"带着紧张感去见一个人/完成一件事，事后再来看这份紧张。"}]},
+ {id:"s6", cn:"CHAPTER 6", t:"会长的心意 · 传承", arc:"感谢与出发", desc:"最后一章：把收到的传出去，然后继续走。",
+  tasks:[
+   {id:"t61", tt:"感谢三人", td:"今天向三个人表达感谢（当面/消息都可以）。"},
+   {id:"t62", tt:"把学到教出去", td:"把这条路上你最有感触的一点，讲给一个人听。"},
+   {id:"t63", tt:"写下 where to go", td:"输入框：下一步，你想成为怎样的人？", essay:{key:"e6", ph:"接下来的我，想去……", min:10}}]}
+];
+const KEY="nenpath", BK="nenpath_cert";
+let st = JSON.parse(localStorage.getItem(KEY)||'{"tasks":{},"essays":{},"start":null}');
+if(!st.tasks) st.tasks={}; if(!st.essays) st.essays={};
+STAGES.forEach(s=>{ if(s.essay) s.tasks[0].essay = s.essay; });
+function save(){ localStorage.setItem(KEY, JSON.stringify(st)); }
+if(!st.start){ st.start = new Date().toISOString().slice(0,10); save(); }
+const ALLT = STAGES.flatMap(s=>s.tasks.map(t=>t.id));
+function isDone(t){ return !!st.tasks[t]; }
+function stageDone(s){ return s.tasks.every(t=>isDone(t.id)); }
+function essayOK(s){
+  const t = s.tasks.find(x=>x.essay);
+  if(!t || !t.essay) return true;
+  const v = (st.essays[t.essay.key]||"").trim();
+  return t.id!=="t01" || v.length >= t.essay.min;
+}
+function unlocked(si){ return si===0 || stageDone(STAGES[si-1]); }
+function stats(){
+  const n = ALLT.filter(isDone).length;
+  const c = STAGES.filter(stageDone).length;
+  const d = Math.max(1, Math.round((Date.now()-new Date(st.start+"T00:00:00"))/86400000)+1);
+  document.getElementById("stT").innerHTML = n+"<i>/</i>"+ALLT.length;
+  document.getElementById("stC").innerHTML = c+"<i>/</i>7";
+  document.getElementById("stD").innerHTML = d+"<small>D</small>";
+  return {n, c, d};
+}
+function daily(){
+  const doy = Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/86400000);
+  const q = QUOTES[doy % QUOTES.length];
+  document.getElementById("dailyQ").textContent = q.q;
+  document.getElementById("dailyW").textContent = q.w + " · NO." + (doy%QUOTES.length+1);
+}
+function render(){
+  const S = stats();
+  document.getElementById("tl").innerHTML = STAGES.map((s,si)=>{
+    const done = stageDone(s), open = unlocked(si);
+    const cls = ["stage", done?"done":"", open?"open":"locked", s._ex?"expand":""].join(" ");
+    return `<div class="${cls}" id="st_${si}">
+      <div class="sc">
+        <div class="sc-h" onclick="tog(${si})">
+          <span class="cn">${s.cn}</span>
+          <span class="t">${s.t}</span>
+          <span class="st">${done?"★ 制霸":open?"进行中":"未解锁"}</span>
+          <span class="arr">→</span>
+        </div>
+        <div class="sc-b">
+          <div class="sc-desc">【${s.arc}】${s.desc}</div>
+          ${s.tasks.map(t=>{
+            const canType = t.essay;
+            const done_t = isDone(t.id);
+            return `<div class="task ${done_t?"hit":""}" onclick="clickTask(${si},'${t.id}',${!!canType},event)">
+              <div class="box">✓</div>
+              <div class="tx">
+                <div class="tt">${t.tt}</div>
+                <div class="td">${t.td}</div>
+                ${canType?`<div class="essay" onclick="event.stopPropagation()">
+                  <textarea id="ta_${t.essay.key}" placeholder="${t.essay.ph}">${st.essays[t.essay.key]||""}</textarea>
+                  <div class="hint">至少 ${t.essay.min} 字 · 自动保存 · 写完点圆圈标记完成</div>
+                </div>`:""}
+              </div>
+            </div>`;
+          }).join("")}
+          <div class="done-note">/// 本章制霸 — 心性 +1</div>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+  if(S.n===ALLT.length && !localStorage.getItem(BK)){
+    localStorage.setItem(BK,"1");
+    document.getElementById("cDays").textContent = S.d;
+    setTimeout(()=>{ document.getElementById("badge").classList.add("show"); confetti(); }, 500);
+  }
+}
+function tog(si){
+  const s = STAGES[si]; const el = document.getElementById("st_"+si);
+  if(!unlocked(si)){ toast("先完成上一章的试炼"); return; }
+  s._ex = !s._ex; render();
+  if(s._ex) setTimeout(()=>document.getElementById("st_"+si)?.scrollIntoView({behavior:"smooth", block:"start"}), 60);
+}
+function clickTask(si, tid, hasEssay, ev){
+  const s = STAGES[si];
+  if(hasEssay){
+    const t = s.tasks.find(x=>x.id===tid);
+    const v = (document.getElementById("ta_"+t.essay.key)?.value||st.essays[t.essay.key]||"").trim();
+    if(v.length < t.essay.min){ toast("先在输入框写下你的答案（"+t.essay.min+"字以上）"); return; }
+    st.essays[t.essay.key] = v;
+  }
+  st.tasks[tid] = !st.tasks[tid]; save();
+  const wasC = stats().c;
+  render();
+  if(st.tasks[tid]){ confetti(1); toast(isStageJustDone(si) ? "★ 第"+(si+1)+"章 制霸！" : "✓ 试炼通过"); }
+}
+function isStageJustDone(si){
+  const now = STAGES[si].tasks.every(t=>isDone(t.id));
+  return now;
+}
+function confetti(mini){
+  const colors=["#7FC8A9","#D9B44A","#EFEFE8","#6FA8DC","#E85D75"];
+  const N = mini?16:30;
+  for(let i=0;i<N;i++){
+    const c=document.createElement("div"); c.className="cfp";
+    c.style.background=colors[i%5];
+    c.style.left=(32+Math.random()*36)+"vw"; c.style.top=(26+Math.random()*18)+"vh";
+    c.style.width=c.style.height=(5+Math.random()*8)+"px";
+    document.body.appendChild(c);
+    const dx=(Math.random()-.5)*300, dy=110+Math.random()*260, rot=Math.random()*720-360;
+    c.animate([{transform:"none",opacity:1},{transform:`translate(${dx}px,${dy}px) rotate(${rot}deg)`,opacity:0}],
+      {duration:1000+Math.random()*700, easing:"cubic-bezier(.2,.7,.4,1)"}).onfinish=()=>c.remove();
+  }
+}
+let toastTimer;
+function toast(m){
+  const t=document.getElementById("toast");
+  t.textContent=m; t.style.opacity=1;
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.style.opacity=0,1500);
+}
+daily(); render();
+</script>
+</body>
+</html>
